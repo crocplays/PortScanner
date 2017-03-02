@@ -1,2 +1,7 @@
 # PortScanner
-Python portscanner
+Python portscanner 
+
+features:
+TCP port scanner
+
+UDP port scanner
