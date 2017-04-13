@@ -7,6 +7,7 @@ def isTCP(p):
 def scan(ip,portList):
     """prints the status of a port. recieves ip,port """
     dstip=ip
+    openPorts = list()
     for dstport in portList:
         
         pack = sr1(IP(dst= dstip)/TCP(dport = dstport),timeout = 5)
@@ -20,21 +21,25 @@ def scan(ip,portList):
                     openPorts.append(dstport)
                 elif((pack[TCP].flags == 4) or (pack[TCP].flags == 20) ):
                     print "port "+ str(dstport) + " is closed"
-        
+    return openPorts    
             
             
 
-global openPorts
-openPorts = list()
+
+
 
 
 targetIP = input("enter the target's ip address: ")
 #there are 65535 ports in a computer
 portList = (80,443)
-scan(targetIP,portList)
+print scan(targetIP,portList)
     
 
-print openPorts
+
+
+
+
+
 
 
 
