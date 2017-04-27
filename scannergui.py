@@ -21,6 +21,7 @@ def checkIP(IP):
     IP='127.0.0.1'
     IPText.delete(0,END)
     IPText.insert(0,IP)
+    time.sleep(1)
     return '127.0.0.1'
 
 def isUDP(p):
@@ -34,10 +35,11 @@ def isTCP(p):
 
 def getPorts():
     ports=list()
-    text=textBox.get('1.0',END)
+    text=textBox.get('0.0',END)
     print text
-    if text=='ALL':
-        for i in xrange(65535):
+    print len(text)
+    if text[0:3]=='ALL':
+        for i in xrange(10):
             ports.append(i)
     else:
         p=text.split(',')
@@ -48,7 +50,7 @@ def getPorts():
 def saveLog(timeOfScan,ports,protocol):
     print ports
     var2.set("   scanning complete, log saved   ")
-    f=open("lastScanLog",'w')
+    f=open("ScanLog"+scanTime.strftime('_%d/%m/%y_%H:%M'),'w')
     f.write(protocol+" scan log\r\nIP address:"+IPText.get()+"\r\n"+timeOfScan)
     f.write("\r\n")
     f.write("".join(ports))
@@ -57,7 +59,7 @@ def saveLog(timeOfScan,ports,protocol):
 def scanTCP(timeOfScan,portList,dstip):
     for dstport in portList:
         ports=list()
-        pack = sr1(IP(dst= dstip)/TCP(dport = dstport),timeout =2)
+        pack = sr1(IP(dst= dstip)/TCP(dport = dstport),timeout =1)
         if pack is not None:
             if pack[0].haslayer(TCP):
                 if(pack[TCP].flags == 18) or (pack[TCP].flags == 16):
@@ -69,6 +71,8 @@ def scanTCP(timeOfScan,portList,dstip):
                     print "port "+ str(dstport) + " is closed"
                     statusText.insert('0.0',"\r\n port "+ str(dstport) + " is closed")
                     ports+="port "+ str(dstport) + " is closed\r\n"
+        else:
+            print "shit"
     saveLog(timeOfScan,ports,"TCP")
 
 
@@ -98,8 +102,9 @@ def scanUDP(timeOfScan,portList,dstip):
 
 def checkScan():
     var2.set("     scanning...")
-    i=datetime.datetime.now()
-    timeOfScan= i.strftime('%A, %d/%m/%y  %H:%M:%S')
+    global scanTime
+    scanTime=datetime.datetime.now()
+    timeOfScan= scanTime.strftime('%A, %d/%m/%y  %H:%M:%S')
     ports=getPorts()
     IP=checkIP(IPText.get())
     if var.get()==1:
@@ -176,4 +181,3 @@ scrollbar2.config(command=statusText.yview)
 
 checkTCP.select()
 window.mainloop()
-
