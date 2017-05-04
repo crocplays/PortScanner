@@ -50,7 +50,7 @@ def getPorts():
 def saveLog(timeOfScan,ports,protocol):
     print ports
     var2.set("   scanning complete, log saved   ")
-    f=open("ScanLog"+scanTime.strftime('_%d/%m/%y_%H:%M'),'w')
+    f=open("ScanLog"+scanTime.strftime('_%d/%m/%y_%H:%M.txt'),'w')
     f.write(protocol+" scan log\r\nIP address:"+IPText.get()+"\r\n"+timeOfScan)
     f.write("\r\n")
     f.write("".join(ports))
@@ -72,7 +72,10 @@ def scanTCP(timeOfScan,portList,dstip):
                     statusText.insert('0.0',"\r\n port "+ str(dstport) + " is closed")
                     ports+="port "+ str(dstport) + " is closed\r\n"
         else:
-            print "shit"
+            print "port "+str(dstport) +" is filtered/closed"
+            statusText.insert('0.0',"\r\n port "+str(dstport)+" is filtered/closed")
+            ports+="port " +str(dstport) + " is filtered/closed\r\n"
+
     saveLog(timeOfScan,ports,"TCP")
 
 
