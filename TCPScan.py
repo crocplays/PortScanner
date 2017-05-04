@@ -4,10 +4,10 @@ from scapy.all import *
 def isTCP(p):
     return TCP in p
 
-def scan(ip,portList):
+def scan(dstip,portList):
     """prints the status of a port. recieves ip,port """
-    dstip=ip
-    openPorts = list()
+    
+    Ports = list()
     for dstport in portList:
         
         pack = sr1(IP(dst= dstip)/TCP(dport = dstport),timeout = 5)
@@ -17,11 +17,13 @@ def scan(ip,portList):
                 print " "
         
                 if(pack[TCP].flags == 18) or (pack[TCP].flags == 16):
+                    
                     print "port " + str(dstport) +" is open"
-                    openPorts.append(dstport)
+                    Ports.append("port "+str(dstport)+" is open\r\n")
                 elif((pack[TCP].flags == 4) or (pack[TCP].flags == 20) ):
+                    Ports.append("port "+str(dstport)+" is closed\r\n")
                     print "port "+ str(dstport) + " is closed"
-    return openPorts    
+    return Ports    
             
             
 
@@ -29,10 +31,10 @@ def scan(ip,portList):
 
 
 
-targetIP = input("enter the target's ip address: ")
+#targetIP = input("enter the target's ip address: ")
 #there are 65535 ports in a computer
-portList = (80,443)
-print scan(targetIP,portList)
+#portList = (40,80,443)
+#print scan(targetIP,portList)
     
 
 

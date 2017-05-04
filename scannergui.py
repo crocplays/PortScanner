@@ -2,6 +2,8 @@ from Tkinter import *
 import datetime
 from scapy.all import *
 import tkMessageBox
+import TCPScan
+import UDPScan
 
 def clearFields():
     textBox.delete('0.0',END)
@@ -39,8 +41,8 @@ def getPorts():
     print text
     print len(text)
     if text[0:3]=='ALL':
-        for i in xrange(10):
-            ports.append(i)
+        for i in xrange(65535):
+            ports.append(i+1)
     else:
         p=text.split(',')
         for i in p:
@@ -50,58 +52,25 @@ def getPorts():
 def saveLog(timeOfScan,ports,protocol):
     print ports
     var2.set("   scanning complete, log saved   ")
-    f=open("ScanLog"+scanTime.strftime('_%d/%m/%y_%H:%M.txt'),'w')
+    f=open("/home/adi/PortScanner/ScanLog"+scanTime.strftime('_%d-%m-%y_%H:%M')+'.txt','w')
     f.write(protocol+" scan log\r\nIP address:"+IPText.get()+"\r\n"+timeOfScan)
     f.write("\r\n")
     f.write("".join(ports))
     f.close()
 
-def scanTCP(timeOfScan,portList,dstip):
-    for dstport in portList:
-        ports=list()
-        pack = sr1(IP(dst= dstip)/TCP(dport = dstport),timeout =1)
-        if pack is not None:
-            if pack[0].haslayer(TCP):
-                if(pack[TCP].flags == 18) or (pack[TCP].flags == 16):
-                    print "port " + str(dstport) +" is open\r\n"
-                    statusText.insert('0.0',"\r\n port " + str(dstport) +" is open")
-                    ports+="port " + str(dstport) +" is open\r\n"
-                    openPorts.append(dstport)
-                elif((pack[TCP].flags == 4) or (pack[TCP].flags == 20) ):
-                    print "port "+ str(dstport) + " is closed"
-                    statusText.insert('0.0',"\r\n port "+ str(dstport) + " is closed")
-                    ports+="port "+ str(dstport) + " is closed\r\n"
-        else:
-            print "port "+str(dstport) +" is filtered/closed"
-            statusText.insert('0.0',"\r\n port "+str(dstport)+" is filtered/closed")
-            ports+="port " +str(dstport) + " is filtered/closed\r\n"
 
-    saveLog(timeOfScan,ports,"TCP")
+def scanUDP(timeOfScan,ports,IP):
+    scannedPorts=UDPScan.scan(IP,ports)
+    for i in scannedPorts:
+        statusText.insert('0.0',i)
+    saveLog(timeOfScan,scannedPorts,"UDP")
 
-
-def scanUDP(timeOfScan,portList,dstip):
-    var2.set("     scanning...")
-    openPorts = list()
-    ports=list()
-    for i in portList:
-        pack = sr1(IP(dst=dstip)/UDP(dport=i),timeout=2)
-        if pack is not None:
-            
-            if pack[0].haslayer(UDP):
-                print "port "+ str(i) + " is open"
-                statusText.insert('0.0',"\r\n port "+ str(i) + " is open")
-                ports+="port "+ str(i) + " is open\r\n"
-                openPorts.append(i)
-            elif pack[0].haslayer(ICMP):
-                print "port "+ str(i) + " is closed/filtered"
-                statusText.insert('0.0',"\r\n port "+ str(i) + " is closed/filtered")
-                ports+="port "+ str(i) + " is closed/filtered\r\n"
-        else:
-            print "port "+ str(i) + " is open/filtered"
-            ports+="port "+ str(i) + " is open/filtered\r\n"
-            statusText.insert('0.0',"\r\n port "+ str(i) + " is open/filtered")
     
-    saveLog(timeOfScan,ports,"UDP")
+def scanTCP(timeOfScan,ports,IP):
+    scannedPorts=TCPScan.scan(IP,ports)
+    for i in scannedPorts:
+        statusText.insert('0.0',i)
+    saveLog(timeOfScan,scannedPorts,"TCP")
 
 def checkScan():
     var2.set("     scanning...")
@@ -110,6 +79,7 @@ def checkScan():
     timeOfScan= scanTime.strftime('%A, %d/%m/%y  %H:%M:%S')
     ports=getPorts()
     IP=checkIP(IPText.get())
+    statusText.delete('0.0',END)
     if var.get()==1:
         scanTCP(timeOfScan,ports,IP)
     else:
