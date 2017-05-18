@@ -2,10 +2,16 @@ from scapy.all import *
 #import logging
 
 def isTCP(p):
+    """ 
+    checks if the the packet is a TCP packet"""
     return TCP in p
 
 def scan(dstip,portList):
-    """prints the status of a port. recieves ip,port """
+    """
+    gets a list of ports and scans all of them and returns the status of each one.
+    to scan the script creates a TCP packet and listens for the return packet.
+    if the 'ack' flag is turned on or the 'ack' and 'syn' means the port is open.
+    if the 'fin' flag is turned on or the 'fin' and 'ack' means the port is closed."""
     
     Ports = list()
     for dstport in portList:
