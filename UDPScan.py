@@ -1,13 +1,22 @@
 from  scapy.all import *
 
 def isUDP(p):
+    """
+    checks if the packet is a UDP packet"""
     return UDP in p
 
 def isICMP(p):
+    """ 
+    checks if the packet is an ICMP packet"""
     return ICMP in p
 
 def scan(dstip,PortList):
-    """gets a target ip and port list and returns open ports """
+    """
+    get a list of ports and scans them.
+    the script creates a UDP packet and sends it to each port.
+    if the return packet is an UDP packet then the ports is open.
+    if the return packet is an ICMP packet then the port is closed or filtered.
+    else the port is either open or filtered"""
     Ports = list()
     for i in PortList:
         pack = sr1(IP(dst=dstip)/UDP(dport=i),timeout=5)
