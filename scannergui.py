@@ -53,7 +53,7 @@ def saveLog(timeOfScan,ports,protocol):
     creates the new text file and then inputs all the ports' status"""
     print ports
     var2.set("   scanning complete, log saved   ")
-    f=open("C:\\"+scanTime.strftime('_%d-%m-%y_%H:%M')+'.txt','w')
+    f=open("C:\\ScanLog_"+scanTime.strftime('_%d-%m-%y_%H:%M')+'.txt','w')
     f.write(protocol+" scan log\r\nIP address:"+IPText.get()+"\r\n"+timeOfScan)
     f.write("\r\n")
     f.write("".join(ports))
@@ -75,6 +75,7 @@ def scanTCP(timeOfScan,ports,IP):
     scans all the ports using the TCPScan module and then prints the port status to the status textbox,
     and then calls the saveLog() function to save the log of hte scan"""
     scannedPorts=TCPScan.scan(IP,ports)
+    print scannedPorts
     for i in scannedPorts:
         statusText.insert('0.0',i)
     saveLog(timeOfScan,scannedPorts,"TCP")
@@ -102,6 +103,7 @@ def main():
     this function sets up he GUI of the program and starts the mainloop."""
     window=Tk()
     window.resizable(width=False, height=False)
+    global var
     var=IntVar()
     global var2
     var2=StringVar()
@@ -136,6 +138,7 @@ def main():
     descriptionLabel2.pack()
     IPFrame=Frame(IP_Frame)
     IPFrame.pack(side="right")
+    global IPText
     IPText=Entry(IPFrame)
     IPText.pack()
     checkFrame=Frame(middle)
@@ -161,6 +164,7 @@ def main():
     statusFrame=Frame(bottom)
     statusFrame.pack(side="bottom")
     scrollbar2=Scrollbar(statusFrame)
+    global statusText
     statusText=Text(statusFrame,yscrollcommand=scrollbar2.set)
     statusText.pack(side="left")
     scrollbar2.pack(side="left",fill=Y)
@@ -170,5 +174,5 @@ def main():
     checkTCP.select()
     window.mainloop()
 
-if __name__="__main__":
+if __name__=="__main__":
     main()
