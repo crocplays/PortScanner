@@ -1,0 +1,4 @@
+TCP scan log
+IP address:10.30.56.1
+Thursday, 08/06/17  10:13:41
+port 80 is open

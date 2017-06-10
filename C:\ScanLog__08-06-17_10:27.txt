@@ -1,0 +1,7 @@
+TCP scan log
+IP address:10.30.56.100
+Thursday, 08/06/17  10:27:20
+port 80 is open
+port 49319 is closed
+port 443 is closed
+port 49345 is closed
